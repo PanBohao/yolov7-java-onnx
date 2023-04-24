@@ -43,7 +43,7 @@ public class PoseEstimation {
         });
 
         // 读取 image
-        Mat img = Imgcodecs.imread("src\\main\\resources\\image\\bus.jpg");
+        Mat img = Imgcodecs.imread("images\\test.jpg");
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
         Mat image = img.clone();
 
@@ -134,7 +134,7 @@ public class PoseEstimation {
         }
         Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2BGR);
         // 保存图像
-        // Imgcodecs.imwrite("image.jpg", img);
+        Imgcodecs.imwrite("images/PE-test.jpg", img);
         HighGui.imshow("Display Image", img);
         // 等待按下任意键继续执行程序
         HighGui.waitKey();

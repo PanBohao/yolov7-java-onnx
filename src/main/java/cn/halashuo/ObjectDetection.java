@@ -47,7 +47,7 @@ public class ObjectDetection {
         Lable lable = new Lable();
 
         // 读取 image
-        Mat img = Imgcodecs.imread("src\\main\\resources\\image\\test.jpg");
+        Mat img = Imgcodecs.imread("images\\bus.jpg");
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
         Mat image = img.clone();
 
@@ -108,7 +108,7 @@ public class ObjectDetection {
         Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2BGR);
 
         // 保存图像
-        // Imgcodecs.imwrite("C:\\Users\\pbh0612\\Desktop\\image.jpg", img);
+        Imgcodecs.imwrite("images\\OD-bus.jpg", img);
         HighGui.imshow("Display Image", img);
         // 等待按下任意键继续执行程序
         HighGui.waitKey();
