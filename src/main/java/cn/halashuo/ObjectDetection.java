@@ -5,7 +5,7 @@ import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import cn.halashuo.domain.ODResult;
-import cn.halashuo.utils.Lable;
+import cn.halashuo.config.ODConfig;
 import cn.halashuo.utils.Letterbox;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -32,7 +32,7 @@ public class ObjectDetection {
         // 加载ONNX模型
         OrtEnvironment environment = OrtEnvironment.getEnvironment();
         OrtSession.SessionOptions sessionOptions = new OrtSession.SessionOptions();
-        OrtSession session = environment.createSession("src\\main\\resources\\model\\yolov7-d6.onnx", sessionOptions);
+        OrtSession session = environment.createSession(ODConfig.modelPath, sessionOptions);
         // 输出基本信息
         session.getInputInfo().keySet().forEach(x-> {
             try {
@@ -44,17 +44,17 @@ public class ObjectDetection {
         });
 
         // 加载标签及颜色
-        Lable lable = new Lable();
+        ODConfig odConfig = new ODConfig();
 
         // 读取 image
-        Mat img = Imgcodecs.imread("images\\bus.jpg");
+        Mat img = Imgcodecs.imread(ODConfig.picPath);
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
         Mat image = img.clone();
 
         // 在这里先定义下框的粗细、字的大小、字的类型、字的颜色(按比例设置大小粗细比较好一些)
         int minDwDh = Math.min(img.width(), img.height());
-        int thickness = minDwDh/333;
-        double fontSize = minDwDh/1145.14;
+        int thickness = minDwDh/ODConfig.lineThicknessRatio;
+        double fontSize = minDwDh/ODConfig.fontSizeRatio;
         int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
         Scalar fontColor = new Scalar(255, 255, 255);
 
@@ -97,10 +97,10 @@ public class ObjectDetection {
             // 画框
             Point topLeft = new Point((odResult.getX0()-dw)/ratio, (odResult.getY0()-dh)/ratio);
             Point bottomRight = new Point((odResult.getX1()-dw)/ratio, (odResult.getY1()-dh)/ratio);
-            Scalar color = new Scalar(lable.getColor(odResult.getClsId()));
+            Scalar color = new Scalar(odConfig.getColor(odResult.getClsId()));
             Imgproc.rectangle(img, topLeft, bottomRight, color, thickness);
             // 框上写文字
-            String boxName = lable.getName(odResult.getClsId()) + ": " + odResult.getScore();
+            String boxName = odConfig.getName(odResult.getClsId()) + ": " + odResult.getScore();
             Point boxNameLoc = new Point((odResult.getX0()-dw)/ratio, (odResult.getY0()-dh)/ratio-3);
             Imgproc.putText(img, boxName, boxNameLoc, fontFace, fontSize, fontColor, thickness);
         });
@@ -108,7 +108,7 @@ public class ObjectDetection {
         Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2BGR);
 
         // 保存图像
-        Imgcodecs.imwrite("images\\OD-bus.jpg", img);
+        Imgcodecs.imwrite(ODConfig.savePicPath, img);
         HighGui.imshow("Display Image", img);
         // 等待按下任意键继续执行程序
         HighGui.waitKey();

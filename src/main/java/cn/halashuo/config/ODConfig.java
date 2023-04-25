@@ -1,4 +1,4 @@
-package cn.halashuo.utils;
+package cn.halashuo.config;
 
 import java.util.Random;
 import java.util.ArrayList;
@@ -7,8 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class Lable {
-    private List<String> names = new ArrayList<>(Arrays.asList(
+public final class ODConfig {
+
+    public static final String modelPath = "src\\main\\resources\\model\\yolov7-d6.onnx";
+    public static final String picPath = "images\\test.jpg";// 要预测图片位置
+    public static final String savePicPath = "images\\OD-test.jpg";// 预测结果保存位置
+    public static final Integer lineThicknessRatio = 333;
+    public static final Double fontSizeRatio = 1145.14;
+    private static final List<String> names = new ArrayList<>(Arrays.asList(
             "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train",
             "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter",
             "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear",
@@ -22,9 +28,9 @@ public class Lable {
             "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
             "teddy bear", "hair drier", "toothbrush"));
 
-    private Map<String, double[]> colors;
+    private final Map<String, double[]> colors;
 
-    public Lable() {
+    public ODConfig() {
         this.colors = new HashMap<>();
         names.forEach(name->{
             Random random = new Random();

@@ -6,7 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class PEPlotConfig {
+public final class PEConfig {
+
+    public static final String modelPath = "src\\main\\resources\\model\\yolov7-w6-pose.onnx";
+    public static final String picPath = "images\\test.jpg";// 要预测图片位置
+    public static final String savePicPath = "images\\PE-test.jpg";// 预测结果保存位置
+    public static final float IoUThreshold = 0.65f;
+    public static final float personScoreThreshold = 0.25f;
+    public static final float keyPointScoreThreshold = 0.45f;
+    // 根据图像大小按比例控制点大小及线粗
+    public static final Integer dotRadiusRatio = 168;
+    public static final Integer lineThicknessRatio = 333;
+
 
     public static final List<Scalar> palette= new ArrayList<>(Arrays.asList(
             new Scalar( 255, 128, 0 ),

@@ -8,7 +8,7 @@ import cn.halashuo.domain.KeyPoint;
 import cn.halashuo.domain.PEResult;
 import cn.halashuo.utils.Letterbox;
 import cn.halashuo.utils.NMS;
-import cn.halashuo.config.PEPlotConfig;
+import cn.halashuo.config.PEConfig;
 import org.opencv.core.*;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -31,7 +31,7 @@ public class PoseEstimation {
         // 加载ONNX模型
         OrtEnvironment environment = OrtEnvironment.getEnvironment();
         OrtSession.SessionOptions sessionOptions = new OrtSession.SessionOptions();
-        OrtSession session = environment.createSession("src\\main\\resources\\model\\yolov7-w6-pose.onnx", sessionOptions);
+        OrtSession session = environment.createSession(PEConfig.modelPath, sessionOptions);
         // 输出基本信息
         session.getInputInfo().keySet().forEach(x -> {
             try {
@@ -43,14 +43,14 @@ public class PoseEstimation {
         });
 
         // 读取 image
-        Mat img = Imgcodecs.imread("images\\test.jpg");
+        Mat img = Imgcodecs.imread(PEConfig.picPath);
         Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
         Mat image = img.clone();
 
         // 在这里先定义下线的粗细、关键的半径(按比例设置大小粗细比较好一些)
         int minDwDh = Math.min(img.width(), img.height());
-        int thickness = minDwDh / 333;
-        int radius = minDwDh / 168;
+        int thickness = minDwDh / PEConfig.lineThicknessRatio;
+        int radius = minDwDh / PEConfig.dotRadiusRatio;
 
         // 更改 image 尺寸
         Letterbox letterbox = new Letterbox();
@@ -91,13 +91,13 @@ public class PoseEstimation {
         List<PEResult> peResults = new ArrayList<>();
         for (int i=0;i<outputData.length;i++){
             PEResult result = new PEResult(outputData[i]);
-            if (result.getScore()>0.25f) {
+            if (result.getScore()>PEConfig.personScoreThreshold) {
                 peResults.add(result);
             }
         }
 
         // 对结果进行非极大值抑制
-        peResults = NMS.nms(peResults, 0.65f);
+        peResults = NMS.nms(peResults, PEConfig.IoUThreshold);
 
         for (PEResult peResult: peResults) {
             System.out.println(peResult);
@@ -108,18 +108,19 @@ public class PoseEstimation {
             List<KeyPoint> keyPoints = peResult.getKeyPointList();
             // 画点
             keyPoints.forEach(keyPoint->{
-                if (keyPoint.getScore()>0.45f) {
+                if (keyPoint.getScore()>PEConfig.keyPointScoreThreshold) {
                     Point center = new Point((keyPoint.getX()-dw)/ratio, (keyPoint.getY()-dh)/ratio);
-                    Scalar color = PEPlotConfig.poseKptColor.get(keyPoint.getId());
+                    Scalar color = PEConfig.poseKptColor.get(keyPoint.getId());
                     Imgproc.circle(img, center, radius, color, -1); //-1表示实心
                 }
             });
             // 画线
-            for (int i=0;i<PEPlotConfig.skeleton.length;i++){
-                int indexPoint1 = PEPlotConfig.skeleton[i][0]-1;
-                int indexPoint2 = PEPlotConfig.skeleton[i][1]-1;
-                if ( keyPoints.get(indexPoint1).getScore()>0.45f && keyPoints.get(indexPoint2).getScore()>0.45f ) {
-                    Scalar coler = PEPlotConfig.poseLimbColor.get(i);
+            for (int i = 0; i< PEConfig.skeleton.length; i++){
+                int indexPoint1 = PEConfig.skeleton[i][0]-1;
+                int indexPoint2 = PEConfig.skeleton[i][1]-1;
+                if ( keyPoints.get(indexPoint1).getScore()>PEConfig.keyPointScoreThreshold &&
+                     keyPoints.get(indexPoint2).getScore()>PEConfig.keyPointScoreThreshold ) {
+                    Scalar coler = PEConfig.poseLimbColor.get(i);
                     Point point1 = new Point(
                             (keyPoints.get(indexPoint1).getX()-dw)/ratio,
                             (keyPoints.get(indexPoint1).getY()-dh)/ratio
@@ -134,7 +135,7 @@ public class PoseEstimation {
         }
         Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2BGR);
         // 保存图像
-        Imgcodecs.imwrite("images/PE-test.jpg", img);
+        Imgcodecs.imwrite(PEConfig.savePicPath, img);
         HighGui.imshow("Display Image", img);
         // 等待按下任意键继续执行程序
         HighGui.waitKey();

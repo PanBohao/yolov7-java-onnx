@@ -1,6 +1,6 @@
 ## ONNX files downloaded
 
-[Click here to download](http://pan.halashuo.cn/?dir=data/ONNX)
+Here are a few ONNX files that have been trained [Click here to download](http://pan.halashuo.cn/?dir=data/ONNX),  After downloading or converting your trained model to ONNX, please put it in the `resources\model` folder, or you can customize the ONNX storage location by modifying the `PEConfig.java` or `ODConfig.java`.
 
 ## Configure the environment
 
