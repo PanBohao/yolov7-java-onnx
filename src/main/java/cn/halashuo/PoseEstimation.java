@@ -89,9 +89,9 @@ public class PoseEstimation {
         float[][] outputData = ((float[][][]) output.get(0).getValue())[0];
 
         List<PEResult> peResults = new ArrayList<>();
-        for (int i=0;i<outputData.length;i++){
-            PEResult result = new PEResult(outputData[i]);
-            if (result.getScore()>PEConfig.personScoreThreshold) {
+        for (float[] outputDatum : outputData) {
+            PEResult result = new PEResult(outputDatum);
+            if (result.getScore() > PEConfig.personScoreThreshold) {
                 peResults.add(result);
             }
         }
