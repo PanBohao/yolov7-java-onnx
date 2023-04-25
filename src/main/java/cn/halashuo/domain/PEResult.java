@@ -5,13 +5,13 @@ import java.util.List;
 
 public class PEResult {
 
-    private Float x0;
-    private Float y0;
-    private Float x1;
-    private Float y1;
-    private Float score;
-    private Integer clsId;
-    private List<KeyPoint> keyPointList;
+    private final Float x0;
+    private final Float y0;
+    private final Float x1;
+    private final Float y1;
+    private final Float score;
+    private final Integer clsId;
+    private final List<KeyPoint> keyPointList;
 
     public PEResult(float[] peResult) {
         float x = peResult[0];
@@ -61,18 +61,18 @@ public class PEResult {
 
     @Override
     public String toString() {
-        String result = "PEResult:" +
+        StringBuilder result = new StringBuilder("PEResult:" +
                 "  x0=" + x0 +
                 ", y0=" + y0 +
                 ", x1=" + x1 +
                 ", y1=" + y1 +
                 ", score=" + score +
                 ", clsId=" + clsId +
-                "\n";
+                "\n");
         for (KeyPoint x : keyPointList) {
-            result = result + x.toString();
+            result.append(x.toString());
         }
-        return result;
+        return result.toString();
     }
 }
 

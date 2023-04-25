@@ -1,10 +1,10 @@
 package cn.halashuo.domain;
 
 public class KeyPoint {
-    private Integer id;
-    private Float x;
-    private Float y;
-    private Float score;
+    private final Integer id;
+    private final Float x;
+    private final Float y;
+    private final Float score;
 
     public KeyPoint(Integer id, Float x, Float y, Float score) {
         this.id = id;
